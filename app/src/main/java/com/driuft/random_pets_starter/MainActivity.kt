@@ -62,6 +62,9 @@ import okhttp3.internal.http2.Header
 import org.json.JSONArray
 import org.json.JSONObject
 
+import android.content.res.Configuration
+
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
@@ -69,6 +72,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var pokemonAdapter: PokemonAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        if (isDarkThemeOn()) {
+            setTheme(R.style.AppTheme_Dark)
+        } else {
+            setTheme(R.style.Theme_RandomPetsStarter)
+        }
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -88,6 +98,9 @@ class MainActivity : AppCompatActivity() {
 //        }
         recyclerView.adapter = pokemonAdapter
     }
+
+
+
 
     private fun loadPokemonList() {
         val asyncHttpClient = AsyncHttpClient()
@@ -111,12 +124,19 @@ class MainActivity : AppCompatActivity() {
                     val name = pokemonObject.getString("name")
                     val pokemonUrl = pokemonObject.getString("url")
                     val pokemonId = i+1
-                    val pokemon = Pokemon(name.replaceFirstChar { it.uppercase() }, pokemonUrl, pokemonId)
+                    val imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png" // set the image URL based on the Pokemon ID
+                    val pokemon = Pokemon(name.replaceFirstChar { it.uppercase() }, imageUrl, pokemonId)
                     pokemonList.add(pokemon)
                 }
                 pokemonAdapter.notifyDataSetChanged()
             }
         }]
+    }
+
+
+    private fun isDarkThemeOn(): Boolean {
+        val nightModeFlags = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+        return nightModeFlags == Configuration.UI_MODE_NIGHT_YES
     }
 
 //    private fun getIdFromUrl(url: String): Int {
